@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Eligibility Assessment | {{ target_name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.3);
+  }
+
+  body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+  }
+
+  .test-container {
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 0 1rem;
+  }
+
+  .progress-container {
+    background: #e2e8f0;
+    height: 8px;
+    border-radius: 10px;
+    margin-bottom: 3rem;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    height: 100%;
+    transition: width 0.5s ease-out;
+  }
+
+  .question-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-index {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .difficulty-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  .diff-easy { background: #dcfce7; color: #166534; }
+  .diff-medium { background: #fef9c3; color: #854d0e; }
+  .diff-hard { background: #fee2e2; color: #991b1b; }
+  .diff-analytical { background: #e0e7ff; color: #3730a3; }
+
+  .passage-box {
+    background: #f1f5f9;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--primary);
+    font-style: italic;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .question-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 2.5rem;
+    line-height: 1.4;
+  }
+
+  .options-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .option-card {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .option-card input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .option-content {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .option-card:hover .option-content {
+    border-color: var(--primary);
+    background: #f8fafc;
+    transform: translateX(4px);
+  }
+
+  .option-card input:checked + .option-content {
+    border-color: var(--primary);
+    background: rgba(30, 41, 59, 0.03);
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.1);
+  }
+
+  .option-prefix {
+    width: 32px;
+    height: 32px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .option-card input:checked + .option-content .option-prefix {
+    background: var(--primary);
+    color: white;
+  }
+
+  .next-btn {
+    width: 100%;
+    margin-top: 3rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s;
+  }
+
+  .next-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(30, 41, 59, 0.2);
+  }
+
+  .short-answer-box textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.05);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="test-container">
+  <div class="progress-info" style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600; color: var(--text-muted);">
+    <span>Question {{ idx }} of {{ total }}</span>
+    <span>{{ ((idx - 1) / total * 100)|round|int }}% Completed</span>
+  </div>
+  <div class="progress-container">
+    <div class="progress-bar" style="width: {{ ((idx - 1) / total * 100) }}%;"></div>
+  </div>
+
+  <div class="question-card">
+    <span class="q-index">Assessment Active: {{ target_name }}</span>
+    
+    {% set diff_class = 'diff-' + (q.diff|lower) %}
+    <div class="difficulty-badge {{ diff_class }}">{{ q.diff }}</div>
+
+    {% if q.p %}
+    <div class="passage-box">
+      <strong>Reading Reference:</strong><br>
+      {{ q.p }}
+    </div>
+    {% endif %}
+
+    <h2 class="question-text">{{ q.q }}</h2>
+
+    <form method="POST">
+      {% if q.options %}
+      <div class="options-grid">
+        {% for opt in q.options %}
+        {% set prefix = ['A', 'B', 'C', 'D'][loop.index0] %}
+        <label class="option-card">
+          <input type="radio" name="answer" value="{{ prefix }}" required>
+          <div class="option-content">
+            <span class="option-prefix">{{ prefix }}</span>
+            <span class="option-label-text">{{ opt }}</span>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="short-answer-box">
+        <label style="display: block; margin-bottom: 1rem; font-weight: 600; color: var(--text-muted);">Your Answer:</label>
+        <textarea name="answer" class="form-control" placeholder="Type your conceptual explanation or numerical value here..." required style="width: 100%; min-height: 120px; border-radius: 16px; padding: 1.5rem; border: 2px solid #e2e8f0; font-family: inherit; font-size: 1.1rem; resize: none; transition: border-color 0.2s;"></textarea>
+      </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary next-btn">
+        {% if idx == total %}
+        Complete Assessment <i data-lucide="check-circle" size="20"></i>
+        {% else %}
+        Record Answer & Next <i data-lucide="arrow-right" size="20"></i>
+        {% endif %}
+      </button>
+    </form>
+  </div>
+  
+  <p style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+    <i data-lucide="lock" size="14" style="vertical-align: middle;"></i> Answers are encrypted for final verification.
+  </p>
+</div>
+
+<script>
+  // Add some interactivity to radio buttons
+  document.querySelectorAll('.option-card').forEach(card => {
+    card.addEventListener('click', () => {
+      // Small haptic-like effect or sound could go here
+    });
+  });
+</script>
+{% endblock %}

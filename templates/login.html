@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — CrackIt</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --or: #ff5b27;
+        --or2: #ff8a5c;
+        --or-l: #fff2ec;
+        --or-d: #c93a09;
+        --ink: #0e0e14;
+        --ink2: #2a2a38;
+        --ink3: #4a4a60;
+        --mist: #f4f4f8;
+        --mist2: #eeeef5;
+        --mist3: #e2e2ed;
+        --white: #ffffff;
+        --green: #10b981;
+        --green-l: #ecfdf5;
+        --red: #ef4444;
+        --red-l: #fef2f2;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Bricolage Grotesque", sans-serif;
+        background: var(--mist);
+        color: var(--ink);
+        height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        overflow: hidden;
+      }
+      .brand-side {
+        background: var(--ink);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem 2.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .brand-side::before {
+        content: "";
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 91, 39, 0.2) 0%,
+          transparent 70%
+        );
+      }
+      .brand-side::after {
+        content: "";
+        position: absolute;
+        bottom: -80px;
+        left: -80px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 91, 39, 0.1) 0%,
+          transparent 70%
+        );
+      }
+      .grid-bg {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      .bc {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 320px;
+      }
+      .logo {
+        font-family: "Clash Display", sans-serif;
+        font-size: 52px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -3px;
+        line-height: 1;
+      }
+      .logo span {
+        color: var(--or);
+      }
+      .tagline {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 6px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .feats {
+        margin-top: 2.5rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+      .feat {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 13px;
+      }
+      .feat-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--or);
+        flex-shrink: 0;
+      }
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 2rem;
+        justify-content: center;
+      }
+      .pill {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.55);
+        padding: 4px 11px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .auth-side {
+        background: var(--white);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem;
+      }
+      .auth-box {
+        width: 100%;
+        max-width: 360px;
+      }
+      .at {
+        font-family: "Clash Display", sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+      .as {
+        font-size: 13px;
+        color: var(--ink3);
+        margin-bottom: 1.75rem;
+      }
+      .fg {
+        margin-bottom: 14px;
+      }
+      .fl {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ink2);
+        margin-bottom: 5px;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+      }
+      .fi {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--mist3);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        background: var(--mist);
+        outline: none;
+        transition: all 0.2s;
+      }
+      .fi:focus {
+        border-color: var(--or);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(255, 91, 39, 0.1);
+      }
+      .fi::placeholder {
+        color: #b0b0c8;
+      }
+      .btn-p {
+        width: 100%;
+        padding: 13px 20px;
+        background: var(--or);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(255, 91, 39, 0.3);
+      }
+      .btn-p:hover {
+        background: var(--or-d);
+        transform: translateY(-1px);
+      }
+      .sw {
+        text-align: center;
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--ink3);
+      }
+      .sw a {
+        color: var(--or);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .sw a:hover {
+        text-decoration: underline;
+      }
+      .alert {
+        padding: 10px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+        margin-bottom: 14px;
+        font-weight: 500;
+      }
+      .ae {
+        background: var(--red-l);
+        color: var(--red);
+        border: 1px solid #fca5a5;
+      }
+      .ag {
+        background: var(--green-l);
+        color: var(--green);
+        border: 1px solid #6ee7b7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="brand-side">
+      <div class="grid-bg"></div>
+      <div class="bc">
+        <div class="logo">Crack<span>It</span></div>
+        <div class="tagline">Crack every exam. Own your future.</div>
+        <div class="feats">
+          <div class="feat">
+            <div class="feat-dot"></div>
+            Morning & Afternoon batches
+          </div>
+          <div class="feat">
+            <div class="feat-dot"></div>
+            Expert faculty for every subject
+          </div>
+          <div class="feat">
+            <div class="feat-dot"></div>
+            Pick only the subjects you need
+          </div>
+        </div>
+        <div class="pills">
+          <span class="pill">JEE Mains</span
+          ><span class="pill">JEE Advanced</span> <span class="pill">NEET</span
+          ><span class="pill">GATE</span> <span class="pill">KCET</span
+          ><span class="pill">COMED-K</span><span class="pill">CUET</span>
+        </div>
+      </div>
+    </div>
+    <div class="auth-side">
+      <div class="auth-box">
+        <div class="at">Welcome back</div>
+        <div class="as">Sign in to your CrackIt account</div>
+        {% with messages = get_flashed_messages(with_categories=true) %} {% for
+        category, message in messages %}
+        <div class="alert {{ 'ag' if category == 'success' else 'ae' }}">
+          {{ message }}
+        </div>
+        {% endfor %} {% endwith %}
+        <form method="POST">
+          <div class="fg">
+            <label class="fl">Email</label>
+            <input
+              class="fi"
+              type="email"
+              name="email"
+              placeholder="you@email.com"
+              required
+            />
+          </div>
+          <div class="fg">
+            <label class="fl">Password</label>
+            <input
+              class="fi"
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-p">Sign In →</button>
+        </form>
+        <div class="sw">
+          New here? <a href="{{ url_for('signup') }}">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

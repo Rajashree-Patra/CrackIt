@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications | CrackIt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="title-group">
+    <h1>Your Notifications</h1>
+    <p>Stay updated with your enrollment status and academic alerts.</p>
+  </div>
+</div>
+
+<div class="card" style="padding: 0;">
+  {% if notifications %}
+    {% for note in notifications %}
+    <div style="padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 1rem; position: relative;">
+      {% if not note.is_read %}
+        <div style="width: 8px; height: 8px; background: var(--accent); border-radius: 50%; position: absolute; top: 1.75rem; left: 0.5rem;"></div>
+      {% endif %}
+      <div style="background: var(--bg); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+        <i data-lucide="info"></i>
+      </div>
+      <div>
+        <h4 style="margin-bottom: 0.25rem;">{{ note.title }}</h4>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">{{ note.message }}</p>
+        <span style="font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 0.5rem;">{{ note.created_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div style="padding: 4rem; text-align: center; color: var(--text-muted);">
+      <i data-lucide="mail-open" size="48" style="margin-bottom: 1rem; opacity: 0.5;"></i>
+      <h3>No notifications yet</h3>
+      <p>We'll notify you when you enroll in subjects or when exams are updated.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

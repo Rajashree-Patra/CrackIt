@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | CrackIt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="title-group">
+    <h1>Welcome back, {{ session.student_name }}</h1>
+    <p>Track your preparation and manage your enrolled subjects.</p>
+  </div>
+  <a href="{{ url_for('explore') }}" class="btn btn-primary"><i data-lucide="plus"></i> Browse Exams</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+  <!-- Main Content -->
+  <div>
+    {% if exams_dict %}
+      {% for exam_name, details in exams_dict.items() %}
+      <div style="margin-bottom: 2.5rem;">
+        <h3 style="margin-bottom: 1rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="book-open" size="20"></i> {{ exam_name }} 
+          <span class="badge badge-slate">{{ details.exam_code }}</span>
+        </h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          {% for sub in details.subjects %}
+          <div class="card" style="padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+              <h4 style="font-family: 'Outfit';">{{ sub.subject_name }}</h4>
+              <span class="badge {{ 'badge-amber' if sub.batch == 'Morning' else 'badge-slate' }}">{{ sub.batch }}</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <i data-lucide="user" size="14"></i> {{ sub.instructor_name }}
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="clock" size="14"></i> {{ sub.batch_time }}
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 1rem;">
+              <a href="{{ url_for('drop', subject_id=sub.subject_id) }}" class="btn btn-outline" style="color: var(--danger); border-color: #fecaca; padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                Drop Subject
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="card" style="text-align: center; padding: 5rem 2rem;">
+      <i data-lucide="ghost" size="64" style="margin-bottom: 1.5rem; opacity: 0.2;"></i>
+      <h2 style="font-family: 'Outfit'; margin-bottom: 0.5rem;">No Active Enrollments</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">Start your journey by exploring available exams and subjects.</p>
+      <a href="{{ url_for('explore') }}" class="btn btn-primary">Browse Exams Now</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar: Readiness & Info -->
+  <div>
+    <div class="card" style="background: var(--primary); color: white; margin-bottom: 1.5rem;">
+      <h3 style="font-family: 'Outfit'; font-size: 1.1rem; margin-bottom: 1.5rem;">Preparation Readiness</h3>
+      
+      {% if target_exam %}
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 3rem; font-weight: 700; font-family: 'Fraunces'; color: var(--accent);">{{ readiness }}%</div>
+          <p style="font-size: 0.85rem; color: #94a3b8;">Target: {{ target_exam.exam_name }}</p>
+        </div>
+        
+        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 100px; overflow: hidden; margin-bottom: 1rem;">
+          <div style="width: {{ readiness }}%; height: 100%; background: var(--accent); transition: width 1s ease-out;"></div>
+        </div>
+        
+        <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.4;">
+          {% if readiness < 30 %}
+            You've just started! Enroll in more subjects to cover the full syllabus.
+          {% elif readiness < 70 %}
+            Good progress. You are covering more than half of the required curriculum.
+          {% else %}
+            Elite status! You are nearly fully enrolled for your target exam.
+          {% endif %}
+        </p>
+      {% else %}
+        <div style="text-align: center; padding: 1rem 0;">
+          <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 1.5rem;">Set a target exam in your profile to track readiness.</p>
+          <a href="{{ url_for('profile') }}" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.2); width: 100%;">Set Target Exam</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h3 style="font-family: 'Outfit'; font-size: 1.1rem; margin-bottom: 1rem;">Quick Tools</h3>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <a href="{{ url_for('timetable') }}" class="btn btn-outline" style="justify-content: flex-start; width: 100%;">
+          <i data-lucide="calendar"></i> View Timetable
+        </a>
+        <a href="{{ url_for('notifications') }}" class="btn btn-outline" style="justify-content: flex-start; width: 100%;">
+          <i data-lucide="bell"></i> Notifications
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

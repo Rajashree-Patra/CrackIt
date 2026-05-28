@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Login — CrackIt</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --or: #ff5b27;
+        --ink: #0e0e14;
+        --ink3: #4a4a60;
+        --mist: #f4f4f8;
+        --mist3: #e2e2ed;
+        --white: #fff;
+        --red: #ef4444;
+        --red-l: #fef2f2;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Bricolage Grotesque", sans-serif;
+        background: var(--ink);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        padding: 2rem;
+      }
+      .grid-bg {
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+      .glow {
+        position: fixed;
+        top: -100px;
+        right: -100px;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 91, 39, 0.2) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .box {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 2.5rem;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 380px;
+      }
+      h1 {
+        font-family: "Clash Display", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .sub {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 13px;
+        margin-bottom: 1.75rem;
+      }
+      label {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 6px;
+        margin-top: 14px;
+      }
+      input {
+        width: 100%;
+        padding: 11px 14px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s;
+      }
+      input:focus {
+        border-color: var(--or);
+      }
+      button {
+        width: 100%;
+        margin-top: 1.5rem;
+        padding: 12px;
+        background: var(--or);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      button:hover {
+        background: #c93a09;
+      }
+      .flash {
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--red-l);
+        color: var(--red);
+        margin-bottom: 1rem;
+      }
+      .back {
+        display: block;
+        text-align: center;
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 12px;
+        text-decoration: none;
+      }
+      .back:hover {
+        color: var(--or);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid-bg"></div>
+    <div class="glow"></div>
+    <div class="box">
+      <h1>Admin <span style="color: var(--or)">Console</span></h1>
+      <div class="sub">Sign in to manage CrackIt</div>
+      {% with messages = get_flashed_messages(with_categories=true) %} {% for
+      category, message in messages %}
+      <div class="flash">{{ message }}</div>
+      {% endfor %} {% endwith %}
+      <form method="post">
+        <label>Email</label>
+        <input type="email" name="email" required value="admin@crackit.in" />
+        <label>Password</label>
+        <input type="password" name="password" required />
+        <button type="submit">Sign In</button>
+      </form>
+      <a class="back" href="{{ url_for('login') }}">← Back to student login</a>
+    </div>
+  </body>
+</html>

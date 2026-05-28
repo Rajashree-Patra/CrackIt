@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Weekly Timetable | CrackIt{% endblock %}
+
+{% block extra_head %}
+<style>
+  .timetable-container {
+    overflow-x: auto;
+  }
+  .timetable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 2rem;
+  }
+  .timetable th {
+    background: var(--primary);
+    color: white;
+    padding: 1.5rem 1rem;
+    font-family: 'Outfit';
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--primary-light);
+  }
+  .timetable th:first-child { border-radius: 12px 0 0 0; }
+  .timetable th:last-child { border-radius: 0 12px 0 0; }
+  
+  .timetable td {
+    padding: 1rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    height: 120px;
+    background: white;
+  }
+  
+  .slot-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .entry {
+    background: var(--bg);
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    height: 100%;
+  }
+  
+  .entry strong {
+    display: block;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .entry span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  
+  .batch-header {
+    background: #f1f5f9;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    border-left: 4px solid var(--primary);
+    margin: 2rem 0 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="title-group">
+    <h1>Academic Schedule</h1>
+    <p>Your personalized, clash-free weekly learning plan.</p>
+  </div>
+  <div class="stats-group" style="display: flex; gap: 2rem;">
+    <div style="text-align: right;">
+      <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Weekly Load</p>
+      <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ total }} <span style="font-size: 0.9rem; font-weight: 500;">Sessions</span></p>
+    </div>
+  </div>
+</div>
+
+{% if total > 0 %}
+  {% for batch_name, batch_times in slot_times.items() %}
+    {% set batch_grid = grid.get(batch_name) %}
+    {% if batch_grid %}
+      <div class="batch-header">{{ batch_name }} Sessions</div>
+      <div class="timetable-container card" style="padding: 0; overflow: hidden;">
+        <table class="timetable">
+          <thead>
+            <tr>
+              <th style="width: 150px;">Time Slot</th>
+              {% for day in days %}
+                <th>{{ day }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for slot_idx in range(3) %}
+              <tr>
+                <td style="background: #f8fafc; font-weight: 600; font-size: 0.85rem; text-align: center; border-right: 2px solid var(--border);">
+                  <i data-lucide="clock" size="14" style="margin-bottom: 0.25rem; opacity: 0.5;"></i><br>
+                  {{ batch_times[slot_idx] }}
+                </td>
+                {% for day_idx in range(6) %}
+                  {% set entry = batch_grid[day_idx][slot_idx] %}
+                  <td>
+                    {% if entry %}
+                      <div class="entry">
+                        <span class="slot-label">{{ entry.exam_code }}</span>
+                        <strong>{{ entry.subject_name }}</strong>
+                        <span>{{ entry.instructor_name }}</span>
+                      </div>
+                    {% else %}
+                      <div style="height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.1;">
+                        <i data-lucide="book" size="24"></i>
+                      </div>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% else %}
+  <div class="card" style="text-align: center; padding: 6rem;">
+    <i data-lucide="calendar-x" size="64" style="opacity: 0.2; margin-bottom: 2rem;"></i>
+    <h2>Your Schedule is Empty</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Enroll in subjects to generate your weekly academic timetable.</p>
+    <a href="{{ url_for('explore') }}" class="btn btn-primary">Find Subjects</a>
+  </div>
+{% endif %}
+{% endblock %}

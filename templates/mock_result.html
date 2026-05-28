@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Result | CrackIt{% endblock %}
+
+{% block extra_head %}
+<style>
+  .result-container {
+    max-width: 1000px;
+    margin: 4rem auto;
+    padding: 0 1rem;
+  }
+
+  .summary-card {
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+  }
+
+  .score-sidebar {
+    background: linear-gradient(135deg, var(--primary) 0%, #000000 100%);
+    color: white;
+    padding: 4rem 3rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .score-circle {
+    width: 160px;
+    height: 160px;
+    border: 8px solid rgba(255,255,255,0.1);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+    animation: rotate 2s linear infinite paused;
+  }
+
+  .score-value { font-size: 3.5rem; font-weight: 800; line-height: 1; }
+  .score-total { font-size: 1.2rem; opacity: 0.7; }
+
+  .readiness-badge {
+    padding: 0.75rem 2rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 100px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 1rem;
+  }
+
+  .analysis-content {
+    padding: 4rem;
+    background: white;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .feedback-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .feedback-item {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border-left: 4px solid var(--accent);
+  }
+
+  .feedback-item h4 { margin-bottom: 0.5rem; color: #1e293b; }
+  .feedback-item p { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+
+  .recommendation-box {
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-top: 3rem;
+  }
+
+  .reco-title {
+    color: #92400e;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .alt-exams {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .alt-badge {
+    background: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #b45309;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .action-buttons {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .summary-card { grid-template-columns: 1fr; }
+    .score-sidebar { padding: 3rem; }
+    .analysis-content { padding: 2rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="result-container">
+  <div class="summary-card">
+    <div class="score-sidebar">
+      <div class="score-circle">
+        <span class="score-value">{{ score }}</span>
+        <span class="score-total">out of {{ total }}</span>
+      </div>
+      <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Performance</h2>
+      <div class="readiness-badge">{{ readiness }}</div>
+    </div>
+
+    <div class="analysis-content">
+      <div class="section">
+        <h3 class="section-title"><i data-lucide="bar-chart-3"></i> Insight Summary</h3>
+        <div class="feedback-grid">
+          <div class="feedback-item">
+            <h4>Subject Clarity</h4>
+            <p>{{ subject_feedback }}</p>
+          </div>
+          <div class="feedback-item" style="border-color: #10b981;">
+            <h4>Decision Mastery</h4>
+            <p>{{ confidence_analysis }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title"><i data-lucide="compass"></i> Preparation Strategy</h3>
+        <p style="color: #475569; line-height: 1.7; margin-bottom: 2rem;">
+          {{ strategy }}
+        </p>
+      </div>
+
+      <div class="recommendation-box">
+        <div class="reco-title">
+          <i data-lucide="sparkles"></i> Final recommendation
+        </div>
+        <p style="color: #92400e; font-weight: 500;">
+          {% if readiness in ['Excellent', 'Good'] %}
+            Your fundamentals for <strong>{{ target }}</strong> are strong. We recommend proceeding with your current plan while focusing on advanced numericals.
+          {% else %}
+            While you have potential, <strong>{{ target }}</strong> level questions show some gaps. We strongly suggest strengthening your basics or exploring these alternatives:
+          {% endif %}
+        </p>
+        
+        {% if alternatives %}
+        <div class="alt-exams">
+          {% for alt in alternatives.split(',') %}
+          <span class="alt-badge">{{ alt.strip() }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="action-buttons">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="flex: 1; padding: 1.25rem; border-radius: 12px; text-align: center;">
+          Go to Dashboard
+        </a>
+        <a href="{{ url_for('profile') }}" class="btn btn-outline" style="flex: 1; padding: 1.25rem; border-radius: 12px; text-align: center;">
+          Update Career Path
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

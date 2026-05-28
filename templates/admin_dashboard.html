@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Control | CrackIt{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  .admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .stat-val {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: 'Fraunces';
+    color: var(--primary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="title-group">
+    <h1>Administrative Insights</h1>
+    <p>Monitor platform growth and student engagement metrics.</p>
+  </div>
+  <div style="display: flex; gap: 1rem;">
+    <a href="{{ url_for('admin_system') }}" class="btn btn-outline" style="border-color: var(--accent); color: var(--accent);"><i data-lucide="database"></i> DB System Insights</a>
+    <a href="{{ url_for('admin_students') }}" class="btn btn-outline"><i data-lucide="users"></i> Manage Students</a>
+  </div>
+</div>
+
+<div class="admin-stats">
+  <div class="card">
+    <p style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">Total Students</p>
+    <div class="stat-val">{{ total_students }}</div>
+  </div>
+  <div class="card">
+    <p style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">Active Exams</p>
+    <div class="stat-val">{{ total_exams }}</div>
+  </div>
+  <div class="card">
+    <p style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">Subject Catalog</p>
+    <div class="stat-val">{{ total_subjects }}</div>
+  </div>
+  <div class="card" style="border-left: 4px solid var(--accent);">
+    <p style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">Gross Enrollments</p>
+    <div class="stat-val">{{ total_enrollments }}</div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <!-- Charts Area -->
+  <div class="card">
+    <h3 style="margin-bottom: 2rem; font-family: 'Outfit';">Exam Popularity Distribution</h3>
+    <div style="height: 400px;">
+      <canvas id="examChart"></canvas>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
+    <div class="card">
+      <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit';">UG/PG Split</h3>
+      <div style="height: 250px;">
+        <canvas id="levelChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+      <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit';">Live Activity</h3>
+      <div style="font-size: 0.85rem;">
+        {% for act in recent_activity %}
+        <div style="padding: 1rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.75rem; align-items: center;">
+          <div style="background: var(--bg); padding: 0.4rem; border-radius: 6px;">
+            <i data-lucide="zap" size="14" style="color: var(--accent);"></i>
+          </div>
+          <div>
+            <strong>{{ act.student_name }}</strong> {{ act.title.lower() }}
+            <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.2rem;">{{ act.created_at.strftime('%H:%M') }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Exam Popularity Bar Chart
+    const examCtx = document.getElementById('examChart').getContext('2d');
+    const examLabels = {{ exam_stats|map(attribute='exam_name')|list|tojson }};
+    const examData = {{ exam_stats|map(attribute='count')|list|tojson }};
+
+    new Chart(examCtx, {
+      type: 'bar',
+      data: {
+        labels: examLabels,
+        datasets: [{
+          label: 'Students Interested',
+          data: examData,
+          backgroundColor: '#1e293b',
+          borderRadius: 8,
+          hoverBackgroundColor: '#d97706'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            titleFont: { family: 'Outfit' },
+            bodyFont: { family: 'Outfit' }
+          }
+        },
+        scales: {
+          y: { 
+            beginAtZero: true, 
+            grid: { borderDash: [5, 5], color: '#e2e8f0' },
+            ticks: { font: { family: 'Outfit' } }
+          },
+          x: { 
+            grid: { display: false },
+            ticks: { font: { family: 'Outfit' } }
+          }
+        }
+      }
+    });
+
+    // Level Split Pie Chart
+    const levelCtx = document.getElementById('levelChart').getContext('2d');
+    const ugCount = {{ level_split.get('UG', 0)|tojson }};
+    const pgCount = {{ level_split.get('PG', 0)|tojson }};
+
+    new Chart(levelCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Undergraduate', 'Postgraduate'],
+        datasets: [{
+          data: [ugCount, pgCount],
+          backgroundColor: ['#d97706', '#1e293b'],
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { 
+            position: 'bottom', 
+            labels: { 
+              padding: 20,
+              usePointStyle: true, 
+              font: { family: 'Outfit', size: 12 } 
+            } 
+          },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            bodyFont: { family: 'Outfit' }
+          }
+        },
+        cutout: '70%',
+        animation: {
+          animateScale: true,
+          animateRotate: true
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

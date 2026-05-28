@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exam.exam_name }} | CrackIt{% endblock %}
+
+{% block extra_head %}
+<style>
+  .exam-banner {
+    background: var(--primary);
+    color: white;
+    border-radius: 20px;
+    padding: 3rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .exam-banner::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    top: -50px;
+    width: 250px;
+    height: 250px;
+    background: var(--accent);
+    opacity: 0.1;
+    border-radius: 50%;
+  }
+  
+  .batch-switcher {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .batch-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: white;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .batch-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  
+  .subject-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav style="background: transparent; border: none; box-shadow: none; padding: 0; height: auto; margin-bottom: 1.5rem;">
+  <a href="{{ url_for('explore') }}" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem;">
+    <i data-lucide="arrow-left" size="16"></i> Back to Explore
+  </a>
+</nav>
+
+<div class="exam-banner">
+  <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+    <span class="badge badge-amber">{{ exam.level }} Level</span>
+    <span style="color: #94a3b8; font-weight: 600;">{{ exam.exam_code }}</span>
+  </div>
+  <h1 style="font-family: 'Fraunces'; font-size: 2.5rem; margin-bottom: 1rem;">{{ exam.exam_name }}</h1>
+  <p style="color: #94a3b8; max-width: 700px; font-size: 1.1rem;">{{ exam.description }}</p>
+</div>
+
+{% if is_locked %}
+<div class="flash error" style="margin-bottom: 2.5rem;">
+  <i data-lucide="lock"></i>
+  <span>Track Mutually Exclusive: You are currently enrolled in {{ other_level }} courses. To switch to {{ exam.level }}, please drop your current subjects first.</span>
+</div>
+{% endif %}
+
+<div class="batch-switcher">
+  <button class="batch-btn active" id="btn-morning" onclick="switchBatch('morning')">
+    <i data-lucide="sun" size="18"></i> Morning Batch
+  </button>
+  <button class="batch-btn" id="btn-afternoon" onclick="switchBatch('afternoon')">
+    <i data-lucide="sunset" size="18"></i> Afternoon Batch
+  </button>
+</div>
+
+{% macro render_subjects(subs, enrolled_ids, is_locked) %}
+<div class="subject-grid">
+  {% for s in subs %}
+  <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+        <h3 style="font-family: 'Outfit'; font-size: 1.1rem;">{{ s.subject_name }}</h3>
+        {% if s.subject_id in enrolled_ids %}
+          <span class="badge badge-success"><i data-lucide="check" size="12"></i> Enrolled</span>
+        {% endif %}
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+          <i data-lucide="user" size="14"></i> {{ s.instructor_name }}
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+          <i data-lucide="users" size="14"></i> {{ s.available_seats }} seats available
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="calendar" size="14"></i> Weekly schedule
+        </div>
+      </div>
+    </div>
+    
+    <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+      {% if s.subject_id in enrolled_ids %}
+        <button class="btn btn-outline" disabled style="width: 100%; opacity: 0.6;">Active Subject</button>
+      {% elif is_locked %}
+        <button class="btn btn-outline" disabled style="width: 100%; opacity: 0.6;"><i data-lucide="lock" size="14"></i> Track Locked</button>
+      {% elif s.available_seats == 0 %}
+        <button class="btn btn-outline" disabled style="width: 100%; color: var(--danger);">Batch Full</button>
+      {% else %}
+        <a href="{{ url_for('enroll', subject_id=s.subject_id) }}" class="btn btn-primary" style="width: 100%;">Enroll Now</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}
+
+<div id="morning-area">
+  <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-weight: 600;">
+    <i data-lucide="clock" size="18"></i> 9:00 AM - 12:00 PM Slots
+  </div>
+  {{ render_subjects(morning, enrolled_ids, is_locked) }}
+</div>
+
+<div id="afternoon-area" style="display: none;">
+  <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-weight: 600;">
+    <i data-lucide="clock" size="18"></i> 2:00 PM - 5:00 PM Slots
+  </div>
+  {{ render_subjects(afternoon, enrolled_ids, is_locked) }}
+</div>
+
+<script>
+  function switchBatch(batch) {
+    const morningArea = document.getElementById('morning-area');
+    const afternoonArea = document.getElementById('afternoon-area');
+    const btnMorning = document.getElementById('btn-morning');
+    const btnAfternoon = document.getElementById('btn-afternoon');
+    
+    if (batch === 'morning') {
+      morningArea.style.display = 'block';
+      afternoonArea.style.display = 'none';
+      btnMorning.classList.add('active');
+      btnAfternoon.classList.remove('active');
+    } else {
+      morningArea.style.display = 'none';
+      afternoonArea.style.display = 'block';
+      btnMorning.classList.remove('active');
+      btnAfternoon.classList.add('active');
+    }
+  }
+</script>
+{% endblock %}

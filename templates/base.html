@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}CrackIt | National Exam Platform{% endblock %}</title>
+    <!-- Fonts: Outfit for body, Fraunces for editorial titles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        --primary: #1e293b; /* Navy Slate */
+        --primary-light: #334155;
+        --accent: #d97706; /* Academic Amber/Gold */
+        --accent-light: #fef3c7;
+        --success: #059669;
+        --danger: #dc2626;
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Outfit', sans-serif;
+        background-color: #f1f5f9;
+        background-image: 
+          linear-gradient(rgba(30, 41, 59, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(30, 41, 59, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        color: var(--text-main);
+        line-height: 1.5;
+        min-height: 100vh;
+      }
+
+      h1, h2, h3, .brand {
+        font-family: 'Fraunces', serif;
+        font-weight: 700;
+      }
+
+      /* Navbar */
+      nav {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      }
+
+      .nav-brand {
+        text-decoration: none;
+        font-size: 1.5rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-brand span {
+        color: var(--accent);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .nav-links a:hover, .nav-links a.active {
+        color: var(--primary);
+      }
+
+      .nav-links a.active {
+        font-weight: 600;
+        position: relative;
+      }
+
+      .nav-links a.active::after {
+        content: '';
+        position: absolute;
+        bottom: -22px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 3px 3px 0 0;
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.4rem 0.75rem;
+        background: var(--bg);
+        border-radius: 100px;
+        border: 1px solid var(--border);
+      }
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      /* Layout */
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+
+      .page-header {
+        margin-bottom: 2.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      .page-header .title-group h1 {
+        font-size: 2.25rem;
+        color: var(--primary);
+        letter-spacing: -0.02em;
+      }
+
+      .page-header .title-group p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        margin-top: 0.25rem;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .card:hover {
+        box-shadow: var(--shadow-lg);
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-light);
+        transform: translateY(-1px);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-main);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        background: var(--bg);
+      }
+
+      /* Badge */
+      .badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 100px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .badge-amber { background: var(--accent-light); color: var(--accent); }
+      .badge-success { background: #d1fae5; color: var(--success); }
+      .badge-danger { background: #fee2e2; color: var(--danger); }
+      .badge-slate { background: #f1f5f9; color: #475569; }
+
+      /* Flash Messages */
+      .flash {
+        padding: 1rem 1.25rem;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 500;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from { transform: translateY(-10px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+
+      .flash.success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+      .flash.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+      /* Transitions */
+      .fade-in {
+        animation: fadeIn 0.4s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      /* Accessibility */
+      a:focus-visible, button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 768px) {
+        nav { padding: 0 1rem; }
+        .nav-links { display: none; } /* Mobile nav would go here */
+        .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      }
+    </style>
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <nav>
+      <a href="{{ url_for('index' if not session.student_id else 'dashboard') }}" class="nav-brand">
+        <i data-lucide="graduation-cap"></i>
+        <span>Crack</span>It
+      </a>
+      
+      {% if session.student_id %}
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">
+          <i data-lucide="layout-dashboard" size="18"></i> Dashboard
+        </a>
+        <a href="{{ url_for('explore') }}" class="{{ 'active' if request.endpoint == 'explore' }}">
+          <i data-lucide="search" size="18"></i> Explore Exams
+        </a>
+        <a href="{{ url_for('timetable') }}" class="{{ 'active' if request.endpoint == 'timetable' }}">
+          <i data-lucide="calendar" size="18"></i> Timetable
+        </a>
+      </div>
+
+      <div class="nav-right">
+        <a href="{{ url_for('notifications') }}" style="color: var(--text-muted); position: relative;">
+          <i data-lucide="bell"></i>
+          {% if unread_notifications_count and unread_notifications_count > 0 %}
+            <span style="position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center;">{{ unread_notifications_count }}</span>
+          {% endif %}
+        </a>
+        <div class="user-pill">
+          <div class="avatar">{{ session.student_name[0].upper() }}</div>
+          <span style="font-weight: 600; font-size: 0.9rem;">{{ session.student_name }}</span>
+          <a href="{{ url_for('profile') }}" style="color: var(--text-muted)"><i data-lucide="settings" size="16"></i></a>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Logout</a>
+      </div>
+      {% elif session.admin_id %}
+      <div class="nav-links">
+        <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint == 'admin_dashboard' }}">Admin Panel</a>
+        <a href="{{ url_for('admin_students') }}" class="{{ 'active' if request.endpoint == 'admin_students' }}">Students Area</a>
+      </div>
+      <div class="nav-right">
+        <span class="badge badge-amber">Administrator</span>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Logout</a>
+      </div>
+      {% else %}
+      <div class="nav-right">
+        <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-primary">Join Now</a>
+      </div>
+      {% endif %}
+    </nav>
+
+    <main class="fade-in">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">
+              <i data-lucide="{{ 'check-circle' if category == 'success' else 'alert-circle' }}"></i>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <script>
+      // Initialize Lucide icons
+      lucide.createIcons();
+    </script>
+    {% block extra_body %}{% endblock %}
+  </body>
+</html>

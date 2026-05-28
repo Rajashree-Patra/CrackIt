@@ -1,0 +1,76 @@
+{% extends "admin_base.html" %} {% block title %}{{ exam.exam_name }} — Admin{%
+endblock %} {% block content %}
+
+<div
+  style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem"
+>
+  <a
+    href="{{ url_for('admin_dashboard') }}"
+    style="
+      color: var(--ink3);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    "
+    >← Overview</a
+  >
+  <span style="color: var(--mist3)">/</span>
+  <span class="badge badge-or">{{ exam.exam_code }}</span>
+  <span
+    class="badge {% if exam.level == 'UG' %}badge-blue{% else %}badge-purple{% endif %}"
+    >{{ exam.level }}</span
+  >
+</div>
+
+<div class="page-header">
+  <h1>{{ exam.exam_name }}</h1>
+  <p>
+    {{ rows|length }} subject enrollment{{ '' if rows|length == 1 else 's' }}
+    (active).
+  </p>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Email</th>
+        <th>City</th>
+        <th>Subject</th>
+        <th>Batch</th>
+        <th>Enrolled On</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td><strong>{{ r.student_name }}</strong></td>
+        <td style="color: var(--ink3)">{{ r.email }}</td>
+        <td style="color: var(--ink3)">{{ r.city or '—' }}</td>
+        <td>{{ r.subject_name }}</td>
+        <td>
+          {% if r.batch == 'Morning' %}<span class="badge badge-mist"
+            >Morning</span
+          >
+          {% else %}<span class="badge badge-blue">Afternoon</span>{% endif %}
+        </td>
+        <td style="color: var(--ink3); font-size: 12px">
+          {{ r.registration_date.strftime('%d %b %Y') }}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td
+          colspan="6"
+          style="text-align: center; padding: 2rem; color: var(--ink3)"
+        >
+          No enrollments yet for this exam.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
