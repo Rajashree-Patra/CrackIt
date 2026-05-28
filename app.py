@@ -23,6 +23,9 @@ BATCH_SLOT_TIMES = {
 }
 
 def get_db():
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        return psycopg2.connect(db_url)
     return psycopg2.connect(
         host=os.getenv("DB_HOST", "localhost"),
         database=os.getenv("DB_NAME", "crackit_db"),
@@ -661,6 +664,19 @@ def admin_logout():
     session.pop('admin_id', None)
     session.pop('admin_name', None)
     return redirect(url_for('index'))
+
+@app.route('/init_db')
+def init_db():
+    try:
+        conn = get_db(); cur = conn.cursor()
+        with open('schema.sql', 'r') as f:
+            cur.execute(f.read())
+        with open('data.sql', 'r') as f:
+            cur.execute(f.read())
+        conn.commit(); conn.close()
+        return "Database Initialized Successfully!"
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 if __name__ == '__main__':
     app.run(debug=True)
