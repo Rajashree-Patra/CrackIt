@@ -61,7 +61,7 @@ Badges:
 
 A small, standard web-app architecture:
 
-```mermaid
+```
 flowchart LR
   Browser -->|HTTP| FlaskApp[Flask app (routes) ]
   FlaskApp -->|psycopg2| Postgres[(PostgreSQL DB)]
