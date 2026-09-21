@@ -60,6 +60,9 @@ Badges:
 ## Architecture & Workflow
 
 A small, standard web-app architecture:
+
+```mermaid
+flowchart LR
   Browser -->|HTTP| FlaskApp[Flask app (routes) ]
   FlaskApp -->|psycopg2| Postgres[(PostgreSQL DB)]
   FlaskApp -->|renders| Templates[Jinja2 templates]
@@ -67,7 +70,7 @@ A small, standard web-app architecture:
   subgraph Auth
     FlaskApp --> Session[Session store (Flask session)]
   end
-
+```
 
 - The user interacts via browser; protected routes are guarded by `login_required` decorator.
 - A server-side `check_eligibility` middleware redirects incomplete students to `/mock_test`.
@@ -93,7 +96,7 @@ Prereqs:
 
 Quick start (Windows / cross-platform):
 
-bash
+```bash
 # 1. clone
 git clone https://github.com/your-org/CrackIt.git
 cd CrackIt
@@ -114,19 +117,20 @@ cp .env.example .env
 # 4. run the app
 python app.py
 # then open http://127.0.0.1:5000
-
+```
 
 Example `.env.example` (create at repo root):
 
+```env
 SECRET_KEY=replace_with_secure_value
-Option A: full connection string
+# Option A: full connection string
 DATABASE_URL=postgresql://user:password@host:5432/crackit_db
 # Option B: individual DB fields (if you don't use DATABASE_URL)
 DB_HOST=localhost
 DB_NAME=crackit_db
 DB_USER=postgres
 DB_PASS=postgres_password
-
+```
 
 ---
 
@@ -139,6 +143,7 @@ DB_PASS=postgres_password
 
 Common dev commands:
 
+```bash
 # Run tests (if added)
 pytest
 
@@ -147,11 +152,13 @@ black .
 
 # Lint
 flake8
+```
 
 ---
 
 ## Project structure
 
+```
 CrackIt/
 ├─ app.py                 # Main Flask app + routes
 ├─ requirements.txt
@@ -167,6 +174,7 @@ CrackIt/
 └─ static/
    ├─ css/
    └─ images/
+```
 
 ---
 
@@ -194,8 +202,10 @@ CrackIt/
 - Production: run behind a WSGI server (Gunicorn) and a reverse proxy (NGINX).
 - Example Gunicorn command:
 
+```bash
 # from project root
 gunicorn -w 4 -b 0.0.0.0:8000 app:app
+```
 
 - Use environment variables for config (no hardcoded secrets).
 - Database backups: use `pg_dump` regularly; store dumps securely.
